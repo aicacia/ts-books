@@ -10,21 +10,27 @@
 		/>
 		<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css" />
 		<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/katex@0.13.9/dist/katex.min.css"
+			integrity="sha384-r/BYDnh2ViiCwqZt5VJVWuADDic3NnnTIEOv4hOh05nSfB6tjWpKmn1kUHOVkMXc"
+			crossorigin="anonymous"
+		/>
 		<title>Books</title>
 
 		
 
-		<link rel="modulepreload" href="/./_app/start-965b3aea.js">
-		<link rel="modulepreload" href="/./_app/chunks/vendor-1b736329.js">
+		<link rel="modulepreload" href="/./_app/start-1144bbaa.js">
+		<link rel="modulepreload" href="/./_app/chunks/vendor-60c255d9.js">
 		<link rel="modulepreload" href="/./_app/chunks/preload-helper-9f12a5fd.js">
-		<link rel="modulepreload" href="/./_app/pages/$layout.svelte-d5fa3418.js">
-		<link rel="modulepreload" href="/./_app/pages/books/index.svelte-c8525937.js">
-		<link rel="modulepreload" href="/./_app/chunks/books-d26deded.js">
+		<link rel="modulepreload" href="/./_app/pages/__layout.svelte-9a80af54.js">
+		<link rel="modulepreload" href="/./_app/pages/books/index.svelte-8ca61fbf.js">
+		<link rel="modulepreload" href="/./_app/chunks/books-4641d48a.js">
 		<link rel="stylesheet" href="/./_app/assets/start-a8cd1609.css">
-		<link rel="stylesheet" href="/./_app/assets/pages/$layout.svelte-92e612de.css">
+		<link rel="stylesheet" href="/./_app/assets/pages/__layout.svelte-6cfb1225.css">
 
 		<script type="module">
-			import { start } from "/./_app/start-965b3aea.js";
+			import { start } from "/./_app/start-1144bbaa.js";
 			start({
 				target: document.querySelector("#svelte"),
 				paths: {"base":"","assets":"/."},
@@ -36,8 +42,8 @@
 					status: 200,
 					error: null,
 					nodes: [
-						import("/./_app/pages/$layout.svelte-d5fa3418.js"),
-						import("/./_app/pages/books/index.svelte-c8525937.js")
+						import("/./_app/pages/__layout.svelte-9a80af54.js"),
+						import("/./_app/pages/books/index.svelte-8ca61fbf.js")
 					],
 					page: {
 						host: location.host, // TODO this is redundant
@@ -62,7 +68,7 @@
 <main class="container">
 
 <form action="javascript:void(0);" class="row mt-4"><div class="col-auto"><input type="text" class="form-control" placeholder="New Book Name" aria-label="New Book Name" required></div>
-	<div class="col-auto"><button type="submit" class="form-control btn btn-primary" aria-label="Update">Create Book
+	<div class="col-auto"><button type="submit" class="btn btn-primary" aria-label="Update">Create Book
 </button></div></form>
 
 <ul class="list-group mt-4"></ul></main>

@@ -1,4 +1,4 @@
-import{a1 as t,_ as e,$ as n}from"./vendor-1b736329.js";
+import{a2 as t,$ as e,a0 as n}from"./vendor-60c255d9.js";
 /*!
  * Quill Editor v1.3.7
  * https://quilljs.com/
