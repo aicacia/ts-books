@@ -78,9 +78,9 @@ function init(settings) {
     amp: false,
     dev: false,
     entry: {
-      file: "/./_app/start-02f1e9d8.js",
+      file: "/./_app/start-8df5b186.js",
       css: ["/./_app/assets/start-a8cd1609.css"],
-      js: ["/./_app/start-02f1e9d8.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
+      js: ["/./_app/start-8df5b186.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
     },
     fetched: void 0,
     floc: false,
@@ -128,8 +128,8 @@ const manifest = {
     {
       type: "page",
       pattern: /^\/books\/([^/]+?)\/?$/,
-      params: (m) => ({bookId: d(m[1])}),
-      a: ["src/routes/__layout.svelte", "src/routes/books/[bookId].svelte"],
+      params: (m) => ({bookUuid: d(m[1])}),
+      a: ["src/routes/__layout.svelte", "src/routes/books/[bookUuid].svelte"],
       b: [".svelte-kit/build/components/error.svelte"]
     }
   ]
@@ -151,11 +151,11 @@ const module_lookup = {
   "src/routes/books/index.svelte": () => Promise.resolve().then(function() {
     return index;
   }),
-  "src/routes/books/[bookId].svelte": () => Promise.resolve().then(function() {
-    return _bookId_;
+  "src/routes/books/[bookUuid].svelte": () => Promise.resolve().then(function() {
+    return _bookUuid_;
   })
 };
-const metadata_lookup = {"src/routes/__layout.svelte": {entry: "/./_app/pages/__layout.svelte-6d1b1b02.js", css: ["/./_app/assets/pages/__layout.svelte-6cfb1225.css"], js: ["/./_app/pages/__layout.svelte-6d1b1b02.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, ".svelte-kit/build/components/error.svelte": {entry: "/./_app/error.svelte-019311c3.js", css: [], js: ["/./_app/error.svelte-019311c3.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, "src/routes/index.svelte": {entry: "/./_app/pages/index.svelte-1e70a8e0.js", css: [], js: ["/./_app/pages/index.svelte-1e70a8e0.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, "src/routes/books/index.svelte": {entry: "/./_app/pages/books/index.svelte-d067407f.js", css: [], js: ["/./_app/pages/books/index.svelte-d067407f.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/books-8edb3a0a.js"], styles: null}, "src/routes/books/[bookId].svelte": {entry: "/./_app/pages/books/[bookId].svelte-378798e9.js", css: [], js: ["/./_app/pages/books/[bookId].svelte-378798e9.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/books-8edb3a0a.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], styles: null}};
+const metadata_lookup = {"src/routes/__layout.svelte": {entry: "/./_app/pages/__layout.svelte-6d1b1b02.js", css: ["/./_app/assets/pages/__layout.svelte-6cfb1225.css"], js: ["/./_app/pages/__layout.svelte-6d1b1b02.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, ".svelte-kit/build/components/error.svelte": {entry: "/./_app/error.svelte-019311c3.js", css: [], js: ["/./_app/error.svelte-019311c3.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, "src/routes/index.svelte": {entry: "/./_app/pages/index.svelte-1e70a8e0.js", css: [], js: ["/./_app/pages/index.svelte-1e70a8e0.js", "/./_app/chunks/vendor-c9b40f2c.js"], styles: null}, "src/routes/books/index.svelte": {entry: "/./_app/pages/books/index.svelte-66e6a3c3.js", css: [], js: ["/./_app/pages/books/index.svelte-66e6a3c3.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/books-9494bd7f.js"], styles: null}, "src/routes/books/[bookUuid].svelte": {entry: "/./_app/pages/books/[bookUuid].svelte-d9846947.js", css: [], js: ["/./_app/pages/books/[bookUuid].svelte-d9846947.js", "/./_app/chunks/vendor-c9b40f2c.js", "/./_app/chunks/books-9494bd7f.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], styles: null}};
 async function load_component(file) {
   return {
     module: await module_lookup[file](),
@@ -283,13 +283,13 @@ function persistentStore(name, defaults, timeoutMS = 5e3) {
 }
 function bookToJSON(book) {
   return {
-    id: book.id,
+    uuid: book.uuid,
     name: book.name.toString()
   };
 }
 function bookFromJSON(json) {
   return {
-    id: json.id,
+    uuid: json.uuid,
     name: new Text$1(json.name)
   };
 }
@@ -306,7 +306,7 @@ const Books = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 		</button></div></form>
 
 <ul class="${"list-group mt-4"}">${each($booksStore.table.rows, (book) => `<li class="${"list-group-item d-flex justify-content-between align-items-start"}"><div class="${"ms-2 me-auto"}"><h3 class="${"fw-bold"}">${escape(book.name)}</h3></div>
-			<a role="${"button"}" class="${"btn btn-primary"}" aria-label="${"Update"}"${add_attribute("href", `/books/${book.id}`, 0)}>Edit
+			<a role="${"button"}" class="${"btn btn-primary"}" aria-label="${"Update"}"${add_attribute("href", `/books/${book.uuid}`, 0)}>Edit
 			</a>
 		</li>`)}</ul>`;
 });
@@ -329,8 +329,8 @@ function isTextBlock(value) {
 }
 function blockToJSON(block) {
   const json = {
-    id: block.id,
-    bookId: block.bookId,
+    uuid: block.uuid,
+    bookUuid: block.bookUuid,
     type: block.type
   };
   if (isTextBlock(block)) {
@@ -341,8 +341,8 @@ function blockToJSON(block) {
 }
 function blockFromJSON(json) {
   const block = {
-    id: json.id,
-    bookId: json.bookId,
+    uuid: json.uuid,
+    bookUuid: json.bookUuid,
     type: json.type
   };
   if (isTextBlock(block)) {
@@ -354,9 +354,9 @@ function blockFromJSON(json) {
 const blocksStore = persistentStore("blocks", {
   table: new Table()
 });
-function updateBlock(blockId, changeFn) {
+function updateBlock(blockUuid, changeFn) {
   blocksStore.change(({table}) => {
-    const block = table.byId(blockId);
+    const block = table.rows.find((row) => row.uuid === blockUuid);
     if (block) {
       changeFn(block);
     }
@@ -496,8 +496,8 @@ const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     quill = q;
   }
   function onMessage(message) {
-    if (message.type === "edit-text-block" && message.payload.id === block.id) {
-      updateBlock(block.id, (block2) => {
+    if (message.type === "edit-text-block" && message.payload.uuid === block.uuid) {
+      updateBlock(block.uuid, (block2) => {
         applyOpsToText(block2.text, message.payload.ops);
         if (edit) {
           quill === null || quill === void 0 ? void 0 : quill.updateContents(new DeltaClass(message.payload.ops), "api");
@@ -509,8 +509,8 @@ const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     }
   }
   function onTextChange(delta) {
-    updateBlock(block.id, (block2) => {
-      room === null || room === void 0 ? void 0 : room.broadcast("edit-text-block", {id: block2.id, ops: delta.ops});
+    updateBlock(block.uuid, (block2) => {
+      room === null || room === void 0 ? void 0 : room.broadcast("edit-text-block", {uuid: block2.uuid, ops: delta.ops});
       applyOpsToText(block2.text, delta.ops);
       rendered = block2.text.toString();
     });
@@ -541,18 +541,21 @@ const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       prevRoom = room;
     }
   }
-  return `<div${add_attribute("id", block.id, 0)}>${edit ? `<div class="${"row"}"><div class="${"col-6"}">${validate_component(TextEditor, "TextEditor").$$render($$result, {text, onTextChange, onQuillMount}, {}, {})}</div>
+  return `<div${add_attribute("id", block.uuid, 0)}>${edit ? `<div class="${"row"}"><div class="${"col-6"}">${validate_component(TextEditor, "TextEditor").$$render($$result, {text, onTextChange, onQuillMount}, {}, {})}</div>
 			<div class="${"col-6"}">${markdown(rendered)}</div></div>` : `${text.trim() ? `${markdown(text)}` : `<div class="${"d-flex align-items-center justify-content-center"}"><h1>Click to Edit</h1></div>`}`}</div>`;
 });
 const Block = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let {block} = $$props;
+  let {room} = $$props;
   let edit;
   onMount(() => {
     window.addEventListener("click", () => edit = false);
   });
   if ($$props.block === void 0 && $$bindings.block && block !== void 0)
     $$bindings.block(block);
-  return `<div class="${"mb-4"}">${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {block, edit}, {}, {})}` : ``}</div>`;
+  if ($$props.room === void 0 && $$bindings.room && room !== void 0)
+    $$bindings.room(room);
+  return `<div class="${"mb-4"}">${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {block, edit, room}, {}, {})}` : ``}</div>`;
 });
 const Book = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $blocksStore, $$unsubscribe_blocksStore;
@@ -594,9 +597,9 @@ if (typeof window === "object") {
   })();
 }
 async function load({page: {params}}) {
-  return {props: {bookId: params.bookId}};
+  return {props: {bookUuid: params.bookUuid}};
 }
-const U5BbookIdu5D = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+const U5BbookUuidu5D = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let book;
   let $booksStore, $$unsubscribe_booksStore;
   let $blocksStore, $$unsubscribe_blocksStore;
@@ -631,11 +634,10 @@ const U5BbookIdu5D = create_ssr_component(($$result, $$props, $$bindings, slots)
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-  let {bookId} = $$props;
+  let {bookUuid} = $$props;
   let room;
   function onMessage(message) {
-    console.log(message);
-    if (message.type === "book") {
+    if (message.type === "sync") {
       booksStore.change(({table}) => {
         table.add(bookFromJSON(message.payload.book));
       });
@@ -644,32 +646,29 @@ const U5BbookIdu5D = create_ssr_component(($$result, $$props, $$bindings, slots)
           table.add(blockFromJSON(block));
         });
       });
-    } else if (message.type === "get-book" && book) {
-      room.send(message.from, "book", {
+      room.off("connection", onConnection);
+    } else if (message.type === "sync-book" && book) {
+      room.send(message.from, "sync", {
         book: bookToJSON(book),
-        blocks: $blocksStore.table.filter((row) => row.bookId === bookId).map(blockToJSON)
+        blocks: $blocksStore.table.filter((row) => row.bookUuid === bookUuid).map(blockToJSON)
       });
     }
   }
   function onConnection() {
-    if (book) {
-      room.off("connection", onConnection);
-    } else {
-      room.broadcast("get-book", void 0);
-    }
+    room.broadcast("sync-book", void 0);
   }
   onMount(() => __awaiter(void 0, void 0, void 0, function* () {
     const peer2 = yield getPeer();
-    room = yield peer2.connectToRoom(getAppId(bookId));
+    room = yield peer2.connectToRoom(getAppId(bookUuid));
     room.on("message", onMessage);
     room.on("connection", onConnection);
   }));
   onDestroy(() => {
     $peer === null || $peer === void 0 ? void 0 : $peer.disconnectFromRoom(room.getRoomId());
   });
-  if ($$props.bookId === void 0 && $$bindings.bookId && bookId !== void 0)
-    $$bindings.bookId(bookId);
-  book = $booksStore.table.rows.find((row) => row.id === bookId);
+  if ($$props.bookUuid === void 0 && $$bindings.bookUuid && bookUuid !== void 0)
+    $$bindings.bookUuid(bookUuid);
+  book = $booksStore.table.rows.find((row) => row.uuid === bookUuid);
   $$unsubscribe_booksStore();
   $$unsubscribe_blocksStore();
   $$unsubscribe_peer();
@@ -677,10 +676,10 @@ const U5BbookIdu5D = create_ssr_component(($$result, $$props, $$bindings, slots)
 
 ${book ? `${validate_component(Book, "Book").$$render($$result, {book, room}, {}, {})}` : `<div class="${"d-flex align-items-center justify-content-center"}"><span class="${"spinner-border spinner-border-sm"}" role="${"status"}" aria-hidden="${"true"}"></span></div>`}`;
 });
-var _bookId_ = /* @__PURE__ */ Object.freeze({
+var _bookUuid_ = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module",
-  default: U5BbookIdu5D,
+  default: U5BbookUuidu5D,
   load
 });
 export {init, render};
