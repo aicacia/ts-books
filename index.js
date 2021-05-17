@@ -14035,7 +14035,10 @@ function sirv (dir, opts={}) {
 	};
 }
 
-/** @param {import('http').IncomingMessage} req */
+/**
+ * @param {import('http').IncomingMessage} req
+ * @returns {Promise<string | Uint8Array>}
+ */
 function getRawBody(req) {
 	return new Promise((fulfil, reject) => {
 		const h = req.headers;
@@ -14082,7 +14085,7 @@ function getRawBody(req) {
 			const [type] = h['content-type'].split(/;\s*/);
 
 			if (type === 'application/octet-stream') {
-				fulfil(data.buffer);
+				fulfil(data);
 			}
 
 			const decoder = new TextDecoder(h['content-encoding'] || 'utf-8');
