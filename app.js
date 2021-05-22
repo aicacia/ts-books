@@ -1,9 +1,9 @@
 import {respond} from "@sveltejs/kit/ssr";
 import {create_ssr_component, validate_component, missing_component, escape, subscribe, add_attribute, each} from "svelte/internal";
-import {setContext, afterUpdate, onMount, createEventDispatcher, beforeUpdate} from "svelte";
-import "uuid";
-import {forage} from "@tauri-apps/tauri-forage";
+import {setContext, afterUpdate, onMount, createEventDispatcher, beforeUpdate, onDestroy} from "svelte";
+import Automerge from "automerge";
 import {debounce} from "@aicacia/debounce";
+import {forage} from "@tauri-apps/tauri-forage";
 import {writable, get} from "svelte/store";
 import {Marked} from "@ts-stack/markdown";
 var root_svelte_svelte_type_style_lang = "#svelte-announcer.svelte-1j55zn5{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}";
@@ -77,9 +77,9 @@ function init(settings) {
     amp: false,
     dev: false,
     entry: {
-      file: "/./_app/start-cedd16c0.js",
+      file: "/./_app/start-295c3b1d.js",
       css: ["/./_app/assets/start-a8cd1609.css"],
-      js: ["/./_app/start-cedd16c0.js", "/./_app/chunks/vendor-e656a39c.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
+      js: ["/./_app/start-295c3b1d.js", "/./_app/chunks/vendor-0fd207b9.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
     },
     fetched: void 0,
     floc: false,
@@ -155,7 +155,7 @@ const module_lookup = {
     return _bookId_;
   })
 };
-const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-8c27353b.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-8c27353b.js", "/./_app/chunks/vendor-e656a39c.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-579cf77d.js", "css": [], "js": ["/./_app/error.svelte-579cf77d.js", "/./_app/chunks/vendor-e656a39c.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-72341380.js", "css": [], "js": ["/./_app/pages/index.svelte-72341380.js", "/./_app/chunks/vendor-e656a39c.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-db3abef0.js", "css": [], "js": ["/./_app/pages/books/index.svelte-db3abef0.js", "/./_app/chunks/vendor-e656a39c.js", "/./_app/chunks/books-e9a0d9e8.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-3fa1d909.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-3fa1d909.js", "/./_app/chunks/vendor-e656a39c.js", "/./_app/chunks/books-e9a0d9e8.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
+const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-4a24fff0.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-4a24fff0.js", "/./_app/chunks/vendor-0fd207b9.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-b4e7d4b2.js", "css": [], "js": ["/./_app/error.svelte-b4e7d4b2.js", "/./_app/chunks/vendor-0fd207b9.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-70d0f351.js", "css": [], "js": ["/./_app/pages/index.svelte-70d0f351.js", "/./_app/chunks/vendor-0fd207b9.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-90516b8e.js", "css": [], "js": ["/./_app/pages/books/index.svelte-90516b8e.js", "/./_app/chunks/vendor-0fd207b9.js", "/./_app/chunks/books-bf4762f3.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-0ed8bcd1.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-0ed8bcd1.js", "/./_app/chunks/vendor-0fd207b9.js", "/./_app/chunks/books-bf4762f3.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
 async function load_component(file) {
   return {
     module: await module_lookup[file](),
@@ -224,65 +224,137 @@ var index$1 = /* @__PURE__ */ Object.freeze({
   "default": Routes,
   load: load$1
 });
-class PersistentStore {
+class AutomergePersistentStore {
   constructor(name, initialState, timeoutMS = 5e3) {
     this.initialized = false;
-    this.updaters = [];
+    this.changeFns = [];
     this.name = name;
     this.store = writable(initialState);
     this.init();
     this.debouncedPersist = debounce(this.persist, timeoutMS);
   }
   async init() {
-    const json = await forage.getItem({key: this.name})();
-    if (json) {
-      this.store.set(JSON.parse(json));
+    const raw = await forage.getItem({key: this.name})();
+    if (raw) {
+      try {
+        this.store.set(this.fromString(raw));
+      } catch (error2) {
+        console.error(error2);
+      }
     }
-    const updaters = this.updaters.slice();
-    this.updaters.length = 0;
-    updaters.forEach((updater) => this.store.update(updater));
+    const changeFns = this.changeFns.slice();
+    this.changeFns.length = 0;
+    changeFns.forEach((changeFn) => this.store.update((doc) => Automerge.change(doc, changeFn)));
     this.debouncedPersist();
     this.initialized = true;
   }
   async persist() {
-    await forage.setItem({key: this.name, value: JSON.stringify(this.get())})();
+    await forage.setItem({key: this.name, value: this.toString()})();
   }
   get() {
     return get(this.store);
   }
-  set(state) {
-    this.update(() => state);
-    return this;
-  }
-  update(updater) {
+  change(changeFn) {
     if (this.initialized) {
-      this.store.update(updater);
+      this.store.update((doc) => Automerge.change(doc, changeFn));
       this.debouncedPersist();
     } else {
-      this.updaters.push(updater);
+      this.changeFns.push(changeFn);
     }
     return this;
   }
   subscribe(subscriber, invalidate) {
     return this.store.subscribe(subscriber, invalidate);
   }
+  toString() {
+    const bytes = Automerge.save(this.get());
+    return bytesToString(bytes);
+  }
+  fromString(str) {
+    const bytes = stringToBytes(str);
+    return Automerge.load(bytes);
+  }
 }
-function persistentStore(name, initialState, timeoutMS = 5e3) {
-  return new PersistentStore(name, initialState, timeoutMS);
+function bytesToString(bytes) {
+  return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 }
-const booksStore = persistentStore("books", {
-  byId: {}
-});
+function stringToBytes(hexString) {
+  const result = [];
+  for (let i = 0; i < hexString.length; i += 2) {
+    result.push(parseInt(hexString.substr(i, 2), 16));
+  }
+  const array = new Uint8Array(result);
+  array.__binaryDocument = true;
+  return array;
+}
+var BlockType;
+(function(BlockType2) {
+  BlockType2["Text"] = "text";
+})(BlockType || (BlockType = {}));
+var BookType;
+(function(BookType2) {
+  BookType2["Journel"] = "journel";
+})(BookType || (BookType = {}));
+function bookStoreId(bookId) {
+  return `book-${bookId}`;
+}
+class BooksStore extends AutomergePersistentStore {
+  constructor() {
+    super(...arguments);
+    this.bookStores = {};
+  }
+  createBook(name, type) {
+    let bookMetaId;
+    this.change((doc) => {
+      const date = new Date().toJSON();
+      bookMetaId = doc.metas.add({
+        name: new Automerge.Text(name),
+        type,
+        createdAt: date
+      });
+    });
+    const bookStore = new AutomergePersistentStore(bookStoreId(bookMetaId), Automerge.from({
+      bookMetaId,
+      blocks: new Automerge.Table()
+    }));
+    this.bookStores[bookMetaId] = bookStore;
+    return bookStore;
+  }
+  getBookById(bookMetaId) {
+    const bookStore = this.bookStores[bookMetaId];
+    if (bookStore) {
+      return bookStore;
+    } else {
+      const bookStore2 = new AutomergePersistentStore(bookStoreId(bookMetaId), Automerge.from({
+        bookMetaId,
+        name: new Automerge.Text(),
+        createdAt: new Date().toJSON(),
+        blocks: new Automerge.Table()
+      }));
+      this.bookStores[bookMetaId] = bookStore2;
+      return bookStore2;
+    }
+  }
+  unloadBookById(bookMetaId) {
+    delete this.bookStores[bookMetaId];
+    return this;
+  }
+}
+const booksStore = new BooksStore("books", Automerge.from({
+  metas: new Automerge.Table()
+}));
 const Books = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $booksStore, $$unsubscribe_booksStore;
   $$unsubscribe_booksStore = subscribe(booksStore, (value) => $booksStore = value);
   let bookName;
+  let bookType = BookType.Journel;
   $$unsubscribe_booksStore();
   return `<form action="${"javascript:void(0);"}" class="${"row mt-4"}"><div class="${"col-auto"}"><input type="${"text"}" class="${"form-control"}" placeholder="${"New Book Name"}" aria-label="${"New Book Name"}" required${add_attribute("value", bookName, 1)}></div>
+	<div class="${"col-auto"}"><select class="${"form-select"}" placeholder="${"New Book Type"}" aria-label="${"New Book Type"}" required${add_attribute("value", bookType, 1)}>${each(Object.entries(BookType), ([key, value]) => `<option${add_attribute("value", value, 0)}>${escape(key)}</option>`)}</select></div>
 	<div class="${"col-auto"}"><button type="${"submit"}" class="${"btn btn-primary"}" aria-label="${"Update"}">Create Book
 		</button></div></form>
 
-<ul class="${"list-group mt-4"}">${each(Object.values($booksStore.byId), (book) => `<li class="${"list-group-item d-flex justify-content-between align-items-start"}"><div class="${"ms-2 me-auto"}"><h3 class="${"fw-bold"}">${escape(book.name)}</h3></div>
+<ul class="${"list-group mt-4"}">${each($booksStore.metas.rows, (book) => `<li class="${"list-group-item d-flex justify-content-between align-items-start"}"><div class="${"ms-2 me-auto"}"><h3 class="${"fw-bold"}">${escape(book.name)}</h3></div>
 			<a role="${"button"}" class="${"btn btn-primary"}" aria-label="${"Update"}"${add_attribute("href", `/books/${book.id}`, 0)}>Edit
 			</a>
 		</li>`)}</ul>`;
@@ -297,14 +369,7 @@ var index = /* @__PURE__ */ Object.freeze({
   [Symbol.toStringTag]: "Module",
   "default": Books_1
 });
-var BlockType;
-(function(BlockType2) {
-  BlockType2["Text"] = "text";
-})(BlockType || (BlockType = {}));
-const blocksStore = persistentStore("blocks", {
-  byId: {}
-});
-const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+const QuillEditor = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   var __awaiter = function(thisArg, _arguments, P, generator) {
     function adopt(value) {
       return value instanceof P ? value : new P(function(resolve) {
@@ -333,6 +398,7 @@ const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) =
     });
   };
   let {text} = $$props;
+  let {multiline = true} = $$props;
   let prevText;
   const dispatch = createEventDispatcher();
   let quill;
@@ -349,10 +415,14 @@ const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) =
     function onChange(delta, _oldContents, source) {
       if (source === "user") {
         dispatch("textchange", delta);
-        dispatch("change", quill.getText());
       }
     }
     function onKeyDown(e) {
+      if (!multiline) {
+        if (e.key === "Enter") {
+          e.stopPropagation();
+        }
+      }
       if (e.key === "Backspace") {
         const str = quill.getText();
         if (str !== "" && str !== "\n") {
@@ -365,6 +435,8 @@ const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) =
   }));
   if ($$props.text === void 0 && $$bindings.text && text !== void 0)
     $$bindings.text(text);
+  if ($$props.multiline === void 0 && $$bindings.multiline && multiline !== void 0)
+    $$bindings.multiline(multiline);
   {
     {
       if (text !== prevText && quill) {
@@ -385,6 +457,7 @@ const Markdown = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   return `<div class="${"markdown"}"${add_attribute("this", element, 1)}>${Marked.parse(markdown)}</div>`;
 });
 const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let {bookId} = $$props;
   let {block} = $$props;
   let {edit} = $$props;
   let prevEdit;
@@ -397,36 +470,67 @@ const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       rendered = text;
     }
   });
+  onMount(() => {
+    window.addEventListener("click", () => edit = false);
+  });
+  if ($$props.bookId === void 0 && $$bindings.bookId && bookId !== void 0)
+    $$bindings.bookId(bookId);
   if ($$props.block === void 0 && $$bindings.block && block !== void 0)
     $$bindings.block(block);
   if ($$props.edit === void 0 && $$bindings.edit && edit !== void 0)
     $$bindings.edit(edit);
-  return `<div>${edit ? `<div class="${"row"}"><div class="${"col-6"}">${validate_component(TextEditor, "TextEditor").$$render($$result, {text}, {}, {})}</div>
-			<div class="${"col-6"}">${validate_component(Markdown, "Markdown").$$render($$result, {markdown: rendered}, {}, {})}</div></div>` : `${block.text.trim() ? `${validate_component(Markdown, "Markdown").$$render($$result, {markdown: block.text}, {}, {})}` : `<div class="${"d-flex align-items-center justify-content-center"}"><h1>Click to Edit</h1></div>`}`}</div>`;
+  return `<div>${edit ? `<div class="${"row"}"><div class="${"col-6"}">${validate_component(QuillEditor, "QuillEditor").$$render($$result, {text}, {}, {})}</div>
+			<div class="${"col-6"}">${validate_component(Markdown, "Markdown").$$render($$result, {markdown: rendered}, {}, {})}</div></div>` : `${block.text.toString().trim() ? `${validate_component(Markdown, "Markdown").$$render($$result, {markdown: block.text.toString()}, {}, {})}` : `<div class="${"d-flex align-items-center justify-content-center"}"><h1>Click to Edit</h1></div>`}`}</div>`;
 });
 const Block = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let {bookId} = $$props;
   let {block} = $$props;
   let edit;
   onMount(() => {
     window.addEventListener("click", () => edit = false);
   });
+  if ($$props.bookId === void 0 && $$bindings.bookId && bookId !== void 0)
+    $$bindings.bookId(bookId);
   if ($$props.block === void 0 && $$bindings.block && block !== void 0)
     $$bindings.block(block);
-  return `<div class="${"mb-4"}">${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {block, edit}, {}, {})}` : ``}</div>`;
+  return `<div class="${"mb-4"}">${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {bookId, block, edit}, {}, {})}` : ``}</div>`;
+});
+const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let {text} = $$props;
+  createEventDispatcher();
+  let textString = text.toString();
+  let edit;
+  let prevEdit;
+  beforeUpdate(() => {
+    if (edit !== prevEdit) {
+      prevEdit = edit;
+      textString = text.toString();
+    }
+  });
+  onMount(() => {
+    window.addEventListener("click", () => edit = false);
+  });
+  if ($$props.text === void 0 && $$bindings.text && text !== void 0)
+    $$bindings.text(text);
+  return `<div>${edit ? `${validate_component(QuillEditor, "QuillEditor").$$render($$result, {text: textString}, {}, {})}` : `${escape(text.toString())}`}</div>`;
 });
 const Book = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $blocksStore, $$unsubscribe_blocksStore;
-  $$unsubscribe_blocksStore = subscribe(blocksStore, (value) => $blocksStore = value);
+  let $bookStore, $$unsubscribe_bookStore;
   let {book} = $$props;
   let blockType = BlockType.Text;
+  let bookStore = booksStore.getBookById(book.id);
+  $$unsubscribe_bookStore = subscribe(bookStore, (value) => $bookStore = value);
+  onDestroy(() => {
+    booksStore.unloadBookById(book.id);
+  });
   if ($$props.book === void 0 && $$bindings.book && book !== void 0)
     $$bindings.book(book);
-  $$unsubscribe_blocksStore();
-  return `<h1>${escape(book.name)}</h1>
+  $$unsubscribe_bookStore();
+  return `<h1>${validate_component(TextEditor, "TextEditor").$$render($$result, {text: book.name}, {}, {})}</h1>
 
-<div class="${"mt-4"}">${each(Object.values($blocksStore.byId), (block) => `${validate_component(Block, "Block").$$render($$result, {block}, {}, {})}`)}</div>
+<div class="${"mt-4"}">${each($bookStore.blocks.rows, (block) => `${validate_component(Block, "Block").$$render($$result, {bookId: book.id, block}, {}, {})}`)}</div>
 
-<div class="${"d-flex align-items-center justify-content-center"}"><form action="${"javascript:void(0);"}" class="${"row mt-4"}"><div class="${"col-auto"}"><select class="${"form-select"}" placeholder="${"New Book Name"}" aria-label="${"New Book Name"}" required${add_attribute("value", blockType, 1)}>${each(Object.entries(BlockType), ([key, value]) => `<option${add_attribute("value", value, 0)}>${escape(key)}</option>`)}</select></div>
+<div class="${"d-flex align-items-center justify-content-center"}"><form action="${"javascript:void(0);"}" class="${"row mt-4"}"><div class="${"col-auto"}"><select class="${"form-select"}" placeholder="${"New Block Type"}" aria-label="${"New Block Type"}" required${add_attribute("value", blockType, 1)}>${each(Object.entries(BlockType), ([key, value]) => `<option${add_attribute("value", value, 0)}>${escape(key)}</option>`)}</select></div>
 		<div class="${"col-auto"}"><button type="${"submit"}" class="${"btn btn-primary"}" aria-label="${"Create Block"}">Create
 			</button></div></form></div>`;
 });
@@ -440,7 +544,7 @@ const U5BbookIdu5D = create_ssr_component(($$result, $$props, $$bindings, slots)
   let {bookId} = $$props;
   if ($$props.bookId === void 0 && $$bindings.bookId && bookId !== void 0)
     $$bindings.bookId(bookId);
-  book = $booksStore.byId[bookId];
+  book = $booksStore.metas.byId(bookId);
   $$unsubscribe_booksStore();
   return `${$$result.head += `${$$result.title = `<title>Book: ${escape(book == null ? void 0 : book.name)}</title>`, ""}`, ""}
 
