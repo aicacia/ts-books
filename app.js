@@ -77,9 +77,9 @@ function init(settings) {
     amp: false,
     dev: false,
     entry: {
-      file: "/./_app/start-f15e4ca0.js",
+      file: "/./_app/start-681b4626.js",
       css: ["/./_app/assets/start-a8cd1609.css"],
-      js: ["/./_app/start-f15e4ca0.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
+      js: ["/./_app/start-681b4626.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
     },
     fetched: void 0,
     floc: false,
@@ -155,7 +155,7 @@ const module_lookup = {
     return _bookId_;
   })
 };
-const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-f694a304.js", "css": [], "js": ["/./_app/pages/books/index.svelte-f694a304.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-2ebe3682.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-2ebe3682.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
+const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-b24d9166.js", "css": [], "js": ["/./_app/pages/books/index.svelte-b24d9166.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b70cc085.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-8486f9f3.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-8486f9f3.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b70cc085.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
 async function load_component(file) {
   return {
     module: await module_lookup[file](),
@@ -488,7 +488,8 @@ const Block = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$bindings.bookId(bookId);
   if ($$props.block === void 0 && $$bindings.block && block !== void 0)
     $$bindings.block(block);
-  return `<div class="${"mb-4"}">${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {bookId, block, edit}, {}, {})}` : ``}</div>`;
+  return `<div class="${"mb-4"}"><div>${escape(new Date(block.createdAt).toDateString())}</div>
+	${block.type === BlockType.Text ? `${validate_component(Text, "Text").$$render($$result, {bookId, block, edit}, {}, {})}` : ``}</div>`;
 });
 const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let {text} = $$props;
@@ -511,6 +512,33 @@ const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) =
 });
 const Book = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $bookStore, $$unsubscribe_bookStore;
+  (function(thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P ? value : new P(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P || (P = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  });
   let {book} = $$props;
   let blockType = BlockType.Text;
   let bookStore = booksStore.getBookById(book.id);
