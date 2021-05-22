@@ -77,9 +77,9 @@ function init(settings) {
     amp: false,
     dev: false,
     entry: {
-      file: "/./_app/start-a0f6dd3b.js",
+      file: "/./_app/start-f15e4ca0.js",
       css: ["/./_app/assets/start-a8cd1609.css"],
-      js: ["/./_app/start-a0f6dd3b.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
+      js: ["/./_app/start-f15e4ca0.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
     },
     fetched: void 0,
     floc: false,
@@ -155,7 +155,7 @@ const module_lookup = {
     return _bookId_;
   })
 };
-const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-f694a304.js", "css": [], "js": ["/./_app/pages/books/index.svelte-f694a304.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-c0c3f063.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-c0c3f063.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
+const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-f694a304.js", "css": [], "js": ["/./_app/pages/books/index.svelte-f694a304.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-2ebe3682.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-2ebe3682.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
 async function load_component(file) {
   return {
     module: await module_lookup[file](),
@@ -475,7 +475,7 @@ const Text = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   if ($$props.edit === void 0 && $$bindings.edit && edit !== void 0)
     $$bindings.edit(edit);
   return `<div>${edit ? `<div class="${"row"}"><div class="${"col-6"}">${validate_component(QuillEditor, "QuillEditor").$$render($$result, {text}, {}, {})}</div>
-			<div class="${"col-6"}">${validate_component(Markdown, "Markdown").$$render($$result, {markdown: rendered}, {}, {})}</div></div>` : `${block.text.toString().trim() ? `${validate_component(Markdown, "Markdown").$$render($$result, {markdown: block.text.toString()}, {}, {})}` : `<div class="${"d-flex align-items-center justify-content-center"}"><h1>Click to Edit</h1></div>`}`}</div>`;
+			<div class="${"col-6"}">${validate_component(Markdown, "Markdown").$$render($$result, {markdown: rendered}, {}, {})}</div></div>` : `${text.trim() ? `${validate_component(Markdown, "Markdown").$$render($$result, {markdown: text.toString()}, {}, {})}` : `<div class="${"d-flex align-items-center justify-content-center"}"><h1>Click to Edit</h1></div>`}`}</div>`;
 });
 const Block = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let {bookId} = $$props;
