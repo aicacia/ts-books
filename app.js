@@ -77,9 +77,9 @@ function init(settings) {
     amp: false,
     dev: false,
     entry: {
-      file: "/./_app/start-64fa97dc.js",
+      file: "/./_app/start-a0f6dd3b.js",
       css: ["/./_app/assets/start-a8cd1609.css"],
-      js: ["/./_app/start-64fa97dc.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
+      js: ["/./_app/start-a0f6dd3b.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/preload-helper-9f12a5fd.js"]
     },
     fetched: void 0,
     floc: false,
@@ -155,7 +155,7 @@ const module_lookup = {
     return _bookId_;
   })
 };
-const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-f694a304.js", "css": [], "js": ["/./_app/pages/books/index.svelte-f694a304.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-0c9cd991.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-0c9cd991.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
+const metadata_lookup = {"src/routes/__layout.svelte": {"entry": "/./_app/pages/__layout.svelte-e5f13b53.js", "css": ["/./_app/assets/pages/__layout.svelte-463bd183.css"], "js": ["/./_app/pages/__layout.svelte-e5f13b53.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, ".svelte-kit/build/components/error.svelte": {"entry": "/./_app/error.svelte-ccb602dc.js", "css": [], "js": ["/./_app/error.svelte-ccb602dc.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/index.svelte": {"entry": "/./_app/pages/index.svelte-22a3473b.js", "css": [], "js": ["/./_app/pages/index.svelte-22a3473b.js", "/./_app/chunks/vendor-83b66aae.js"], "styles": null}, "src/routes/books/index.svelte": {"entry": "/./_app/pages/books/index.svelte-f694a304.js", "css": [], "js": ["/./_app/pages/books/index.svelte-f694a304.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js"], "styles": null}, "src/routes/books/[bookId].svelte": {"entry": "/./_app/pages/books/[bookId].svelte-c0c3f063.js", "css": [], "js": ["/./_app/pages/books/[bookId].svelte-c0c3f063.js", "/./_app/chunks/vendor-83b66aae.js", "/./_app/chunks/books-b78244e7.js", "/./_app/chunks/preload-helper-9f12a5fd.js"], "styles": null}};
 async function load_component(file) {
   return {
     module: await module_lookup[file](),
@@ -418,11 +418,6 @@ const QuillEditor = create_ssr_component(($$result, $$props, $$bindings, slots) 
       }
     }
     function onKeyDown(e) {
-      if (!multiline) {
-        if (e.key === "Enter") {
-          e.stopPropagation();
-        }
-      }
       if (e.key === "Backspace") {
         const str = quill.getText();
         if (str !== "" && str !== "\n") {
@@ -512,7 +507,7 @@ const TextEditor = create_ssr_component(($$result, $$props, $$bindings, slots) =
   });
   if ($$props.text === void 0 && $$bindings.text && text !== void 0)
     $$bindings.text(text);
-  return `<div>${edit ? `${validate_component(QuillEditor, "QuillEditor").$$render($$result, {text: textString}, {}, {})}` : `${escape(text.toString())}`}</div>`;
+  return `<div>${edit ? `${validate_component(QuillEditor, "QuillEditor").$$render($$result, {text: textString, multiline: false}, {}, {})}` : `${escape(text.toString())}`}</div>`;
 });
 const Book = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $bookStore, $$unsubscribe_bookStore;
