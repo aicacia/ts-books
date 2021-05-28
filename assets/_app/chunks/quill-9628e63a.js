@@ -1,4 +1,4 @@
-import{a4 as t,a5 as e}from"./vendor-979ae52c.js";var n={exports:{}};
+import{a4 as t,a5 as e}from"./vendor-53195a77.js";var n={exports:{}};
 /*!
  * Quill Editor v1.3.7
  * https://quilljs.com/
